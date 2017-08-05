@@ -1,10 +1,13 @@
-#!/bin/bash
+#!/bin/bash -x
 
 
-#################
-#
-# build_one.sh  <qemu-version> <kernel-version>
+################################################################################
+#                                                                              #
+# build_one.sh  <qemu-version> <kernel-version>                                #
+#                                                                              #
+################################################################################
 
+EXEC_PATH=$(dirname $0)
 QEMU_v=$1
 KERNEL_v=$2
 
@@ -24,14 +27,15 @@ QEMU="qemu-${QEMU_v}/arm-softmmu/qemu-system-arm -nographic -no-reboot"
 
 function exec_cmd()
 {
-	local cmd=$@
+	local cmd=$*
 
 	echo ================ $cmd =================
 	eval "$cmd"
 
-	if [ $? -ne 0 ]; then
-		echo ========== return $? ===========
-		exit $?
+	local ret=$?
+	if [ ${ret} -ne 0 ]; then
+		echo ========== return ${ret} ===========
+		exit ${ret} 
 	fi	
 }
 
@@ -73,7 +77,7 @@ function build_qemu()
 
 function build_kernel()
 {
-	if [ -e ${KERENL_DIR}/arch/arm/boot/zImage -a -e ${KERNEL_DIR}/arch/arm/boot/dts/vexpress-v2p-ca9.dtb ]; then
+	if [ -e ${KERNEL_DIR}/arch/arm/boot/zImage -a -e ${KERNEL_DIR}/arch/arm/boot/dts/vexpress-v2p-ca9.dtb ]; then
 		return
 	fi
 
@@ -89,4 +93,4 @@ extrace
 build_qemu
 build_kernel
 
-exec_cmd ${QEMU} -M  vexpress-a9 -kernel linux-4.10/arch/arm/boot/zImage -dtb linux-4.10/arch/arm/boot/dts/vexpress-v2p-ca9.dtb -append \"console=ttyAMA0i root=/dev/mmcblk0 rw\" -sd  a9rootfs.ext3
+timeout --foreground 60s ${EXEC_PATH}/start-vexpress.sh ${QEMU_DIR}/arm-softmmu/qemu-system-arm ${KERNEL_DIR} a9rootfs.ext3
