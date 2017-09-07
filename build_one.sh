@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 
 ################################################################################
@@ -6,6 +6,8 @@
 # build_one.sh  <qemu-version> <kernel-version>                                #
 #                                                                              #
 ################################################################################
+
+. base.sh
 
 EXEC_PATH=$(dirname $0)
 QEMU_v=$1
@@ -20,7 +22,7 @@ KERNEL_URL=https://www.kernel.org/pub/linux/kernel/v4.x/${KERNEL_COMPRESS_FILE}
 
 echo "qemu = ${QEMU_v} kernel = ${KERNEL_v}"
 
-WGET="wget --no-check-certificate"
+#WGET="wget --no-check-certificate -c"
 CPUS=$(cat /proc/cpuinfo  | grep processor | wc -l)
 MAKE="make -j$CPUS"
 QEMU="qemu-${QEMU_v}/arm-softmmu/qemu-system-arm -nographic -no-reboot"
@@ -41,13 +43,8 @@ function exec_cmd()
 
 function download()
 {
-	if [ ! -e ${QEMU_COMPRESS_FILE} ]; then
-		$WGET ${QEMU_URL}
-	fi
-
-	if [ ! -e ${KERNEL_COMPRESS_FILE} ]; then
-		$WGET ${KERNEL_URL}
-	fi
+	WGET ${QEMU_URL}
+	WGET ${KERNEL_URL}
 }
 
 

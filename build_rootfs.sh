@@ -7,7 +7,8 @@ if [ $uid -ne 0 ]; then
 fi
 
 if [ ! -e busybox-1.20.2.tar.bz2 ]; then
-	wget http://www.busybox.net/downloads/busybox-1.20.2.tar.bz2
+	wget --no-check-certificate http://www.busybox.net/downloads/busybox-1.20.2.tar.bz2  || 
+	(echo "Download busybox error" && exit 1)
 fi
 
 if [ ! -e busybox-1.20.2 ]; then
