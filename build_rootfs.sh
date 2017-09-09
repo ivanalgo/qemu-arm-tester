@@ -34,7 +34,6 @@ mknod rootfs/dev/tty4 c 4 4
 mkdir rootfs/proc
 
 cat > rootfs/etc/init.d/rcS <<EOF
-mkdir /proc
 mount -t proc nodev /proc
 reboot
 EOF

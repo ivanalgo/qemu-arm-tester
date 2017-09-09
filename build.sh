@@ -4,8 +4,14 @@ RESULT=versions
 
 function kernel_release()
 {
-	wget https://www.kernel.org/pub/linux/kernel/v4.x/
-	egrep -o "linux-[[:digit:]]*.[[:digit:]]*.tar.gz" index.html  | sort | uniq | sed 's/\.tar\.gz//' | sed 's/linux-//'
+	wget -c https://www.kernel.org/pub/linux/kernel/v4.x/ --default-page kernel_release
+	egrep -o "linux-[[:digit:]]*.[[:digit:]]*.tar.gz" kernel_release  | sort | uniq | sed 's/\.tar\.gz//' | sed 's/linux-//'
+}
+
+function qemu_release()
+{
+	wget -c https://download.qemu.org/	 --default-page qemu_release
+	egrep -o "qemu-[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.tar.xz" qemu_release |sort | uniq | sed -e 's/qemu-//' -e 's/\.tar.xz//'	
 }
 
 function test_kernel()
@@ -29,7 +35,18 @@ function test_kernel()
 dir=$(dirname $0)
 dir=$(pwd)/${dir}
 
-for kernel in $(kernel_release)
+qemu_list=$(qemu_release)
+kernel_list=$(kernel_release)
+
+for qemu in ${qemu_list}
 do
-	test_kernel 2.7.0 ${kernel}
+	# start qemu version begin with 2.x.x
+	if echo $qemu | egrep  -q "[0,1]\.[[:digit:]]+\.[[:digit:]]+"; then
+		continue
+	fi
+
+	for kernel in ${kernel_list}
+	do
+		test_kernel ${qemu} ${kernel}
+	done
 done

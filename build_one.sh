@@ -6,7 +6,15 @@
 # build_one.sh  <qemu-version> <kernel-version>                                #
 #                                                                              #
 ################################################################################
+function usage()
+{
+	echo "Usage: $1 <qemu-version> <kernel-version>"
+}
 
+if [ $# -ne 2 ]; then
+	usage $(basename $0)
+	exit 1
+fi
 
 EXEC_PATH=$(dirname $0)
 QEMU_v=$1
@@ -15,7 +23,7 @@ KERNEL_v=$2
 . base.sh
 
 QEMU_DIR=qemu-${QEMU_v}
-QEMU_COMPRESS_FILE=${QEMU_DIR}.tar.bz2
+QEMU_COMPRESS_FILE=${QEMU_DIR}.tar.xz
 QEMU_URL=https://download.qemu.org/${QEMU_COMPRESS_FILE}
 KERNEL_DIR=linux-${KERNEL_v}
 KERNEL_COMPRESS_FILE=${KERNEL_DIR}.tar.gz
@@ -38,7 +46,7 @@ function download()
 function extrace()
 {
 	#if [ ! -e ${QEMU_DIR} ]; then
-		exec_cmd tar jxf ${QEMU_COMPRESS_FILE}
+		exec_cmd tar Jxf ${QEMU_COMPRESS_FILE}
 	#fi
 
 	#if [ ! -e ${KERNEL_DIR} ]; then
