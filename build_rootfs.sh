@@ -31,6 +31,8 @@ mknod rootfs/dev/tty2 c 4 2
 mknod rootfs/dev/tty3 c 4 3
 mknod rootfs/dev/tty4 c 4 4
 
+mkdir rootfs/proc
+
 cat > rootfs/etc/init.d/rcS <<EOF
 mkdir /proc
 mount -t proc nodev /proc
@@ -49,3 +51,5 @@ fi
 mount -t ext3 a9rootfs.ext3 tmpfs/ -o loop
 cp -r rootfs/*  tmpfs/
 umount tmpfs
+
+chmod a+rw a9rootfs.ext3

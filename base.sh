@@ -9,12 +9,34 @@ function error()
 	echo "=================================================================" 2>&1
 }
 
-function WGET()
-{
-	local url=$1
+COMMAND_FILE=qemu-${QEMU_v}-kernel-${KERNEL_v}-command-list.log
 
-	if ! wget -c  --no-check-certificate $url; then
-		error "Download $url error, exiting"
-		exit 1
-	fi
+function init_logging()
+{
+	echo -n "" > ${COMMAND_FILE}
 }
+
+function logging()
+{
+	local cmd="$@"
+	echo "$cmd" >> ${COMMAND_FILE}
+}
+
+
+function exec_cmd()
+{
+	local cmd=$@
+
+	logging ${cmd}
+	eval $cmd
+
+	local ret=$?
+	if [ ${ret} -ne 0 ]; then
+		error "${cmd}"
+		exit ${ret} 
+	fi	
+}
+
+WGET="wget --no-check-certificate -c"
+CPUS=$(cat /proc/cpuinfo  | grep processor | wc -l)
+MAKE="make -j${CPUS}"
